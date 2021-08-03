@@ -1,0 +1,181 @@
+---
+openapi: 3.0.2
+info:
+  title: Customer API
+  version: 1.0.0
+paths:
+  /Customers:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCustomer'
+            examples:
+              New Customer:
+                value:
+                  name: Иван
+                  lastName: Иванов
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              examples:
+                Customer info:
+                  value:
+                    id: 2
+                    name: Иван
+                    lastName: Иванов
+          description: customer response
+      operationId: addCustomer
+      description: Создание нового клиента
+  /Customers/{id}:
+    get:
+      parameters:
+      - examples:
+          Поиск клиента:
+            value: "1"
+        name: id
+        description: Логин клиента
+        schema:
+          type: integer
+        in: path
+        required: true
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              examples:
+                Find customer:
+                  value:
+                    id: 1
+                    name: Петр
+                    lastName: Петрович
+          description: customer response
+      operationId: findCustomerById
+      description: Получение информации по логину клиента
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCustomer'
+            examples:
+              Изменение клиента:
+                value:
+                  name: Степан
+                  lastName: Петров
+        required: true
+      parameters:
+      - examples:
+          Обновление клиента:
+            value: "3"
+        name: id
+        description: Customer Login
+        schema:
+          type: integer
+        in: path
+        required: true
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              examples:
+                Пример ответа:
+                  value:
+                    id: 3
+                    name: Степан
+                    LastName: Петров
+          description: customer response
+      operationId: updateCustomer
+      description: Обновление данных о клиенте по логину
+    delete:
+      parameters:
+      - examples:
+          Удаление клиента:
+            value: "3"
+        name: id
+        description: Customer Login
+        schema:
+          type: integer
+        in: path
+        required: true
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+        "204":
+          description: customer deleted
+      operationId: deleteCustomer
+      description: Удаление клиента с указанным логином
+    parameters:
+    - name: id
+      in: path
+      required: true
+components:
+  schemas:
+    NewCustomer:
+      description: ""
+      required:
+      - name
+      - lastName
+      type: object
+      properties:
+        name:
+          description: ""
+          type: string
+        lastName:
+          description: ""
+          type: string
+    Error:
+      description: ""
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          description: ""
+          type: integer
+        message:
+          description: ""
+          type: string
+    Customer:
+      description: ""
+      type: object
+      allOf:
+      - required:
+        - id
+        type: object
+        properties:
+          id:
+            description: ""
+            type: integer
+      - $ref: '#/components/schemas/NewCustomer'
