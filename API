@@ -37,13 +37,13 @@ paths:
           description: customer response
       operationId: addCustomer
       description: Создание нового клиента
-  /Customers/{id}:
+  /Customers/{customerId}:
     get:
       parameters:
       - examples:
-          Поиск клиента:
+          Логин клиента:
             value: "1"
-        name: id
+        name: customerId
         description: Логин клиента
         schema:
           type: integer
@@ -84,10 +84,10 @@ paths:
         required: true
       parameters:
       - examples:
-          Обновление клиента:
+          Логин клиента:
             value: "3"
-        name: id
-        description: Customer Login
+        name: customerId
+        description: Логин клиента
         schema:
           type: integer
         in: path
@@ -116,10 +116,10 @@ paths:
     delete:
       parameters:
       - examples:
-          Удаление клиента:
+          Логин клиента:
             value: "3"
-        name: id
-        description: Customer Login
+        name: customerId
+        description: Логин клиента
         schema:
           type: integer
         in: path
@@ -136,9 +136,126 @@ paths:
       operationId: deleteCustomer
       description: Удаление клиента с указанным логином
     parameters:
-    - name: id
+    - name: customerId
       in: path
       required: true
+  /Orders/{orderId}:
+    get:
+      parameters:
+      - examples:
+          Пример запроса:
+            value: "50"
+        name: orderId
+        description: Код заказа
+        schema:
+          type: integer
+        in: path
+        required: true
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                Пример ответа:
+                  value:
+                    qty: 39
+                    customerId: 73
+                    itemId: 92
+                    orderStatus: Canceled
+          description: order response
+      operationId: findOrder
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrder'
+            examples:
+              Пример запроса:
+                value:
+                  orderStatus: Canceled
+                  qty: 83
+                  itemId: 86
+        required: false
+      parameters:
+      - examples:
+          Пример запроса:
+            value: "49"
+        name: orderId
+        description: Код заказа
+        schema:
+          type: integer
+        in: path
+        required: true
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                Пример ответа:
+                  value:
+                    orderId: 55
+                    itemId: 13
+                    qty: 68
+                    customerId: 77
+                    orderStatus: New
+          description: order response
+      operationId: updateOrder
+    parameters:
+    - name: orderId
+      in: path
+      required: true
+  /Orders:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewOrder'
+            examples:
+              Пример запроса:
+                value:
+                  qty: 39
+                  customerId: 73
+                  itemId: 92
+        required: true
+      responses:
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                Пример ответа:
+                  value:
+                    qty: 39
+                    customerId: 73
+                    itemId: 92
+                    orderStatus: New
+          description: order response
+      operationId: createOrder
 components:
   schemas:
     NewCustomer:
@@ -179,3 +296,56 @@ components:
             description: ""
             type: integer
       - $ref: '#/components/schemas/NewCustomer'
+    NewOrder:
+      description: ""
+      required:
+      - itemId
+      - qty
+      - customerId
+      type: object
+      properties:
+        qty:
+          description: ""
+          type: integer
+        customerId:
+          description: ""
+          type: integer
+        itemId:
+          description: ""
+          type: integer
+    Order:
+      description: ""
+      type: object
+      allOf:
+      - required:
+        - orderId
+        - orderStatus
+        type: object
+        properties:
+          orderId:
+            description: ""
+            type: integer
+          orderStatus:
+            description: ""
+            enum:
+            - New
+            - Canceled
+            type: string
+      - $ref: '#/components/schemas/NewOrder'
+    UpdateOrder:
+      description: ""
+      required: []
+      type: object
+      properties:
+        orderStatus:
+          description: ""
+          enum:
+          - New
+          - Canceled
+          type: string
+        qty:
+          description: ""
+          type: integer
+        itemId:
+          description: ""
+          type: integer
